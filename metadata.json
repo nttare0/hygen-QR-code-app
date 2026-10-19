@@ -1,0 +1,6 @@
+{
+  "name": "QuickPay QR",
+  "description": "A minimal, child-friendly tactile neumorphic QR payment app with biometric verification and bank account integration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
