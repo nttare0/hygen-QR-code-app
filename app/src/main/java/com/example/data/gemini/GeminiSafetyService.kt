@@ -39,7 +39,6 @@ class GeminiSafetyService {
         val apiKey = BuildConfig.GEMINI_API_KEY
 
         if (apiKey.isEmpty() || apiKey == "MY_GEMINI_API_KEY") {
-            // Instant default safe response for child-friendly demo
             return@withContext MerchantSafetyResult(
                 isSafe = true,
                 safetyBadge = "Verified Merchant",
@@ -59,7 +58,7 @@ class GeminiSafetyService {
                 Respond in valid JSON format only:
                 {
                   "isSafe": true,
-                  "safetyBadge": "Verified Merchant" (or "Caution Needed"),
+                  "safetyBadge": "Verified Merchant",
                   "summary": "Short 1-sentence child-friendly confirmation (under 12 words)",
                   "categoryAdvice": "Short 1-sentence budgeting note (under 10 words)"
                 }
@@ -108,13 +107,12 @@ class GeminiSafetyService {
             val summary = parsedJson.optString("summary", "Official merchant verified. Safe to checkout.")
             val advice = parsedJson.optString("categoryAdvice", "Standard everyday spending.")
 
-            val elapsed = System.currentTimeMillis() - startTime
             MerchantSafetyResult(
                 isSafe = isSafe,
                 safetyBadge = badge,
                 summary = summary,
                 categoryAdvice = advice,
-                latencyMs = elapsed
+                latencyMs = System.currentTimeMillis() - startTime
             )
         } catch (e: Exception) {
             Log.e("GeminiSafety", "Error verifying merchant: ${e.message}")

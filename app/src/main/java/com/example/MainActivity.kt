@@ -40,6 +40,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,9 +56,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.ui.neumorphic.LocalHapticsEnabled
 import com.example.ui.neumorphic.NeuButton
 import com.example.ui.neumorphic.neuDebossed
 import com.example.ui.neumorphic.neuRaised
+import com.example.ui.neumorphic.rememberTactileHaptics
 import com.example.ui.screens.HistoryScreen
 import com.example.ui.screens.QuickScannerScreen
 import com.example.ui.screens.SecuritySettingsScreen
@@ -94,12 +98,14 @@ fun MainApp(
     viewModel: PaymentViewModel = viewModel()
 ) {
     var currentTab by remember { mutableStateOf(NavTab.SCAN) }
+    val isHapticsEnabled by viewModel.isHapticsEnabled.collectAsState()
 
     // Back handler to navigate back to SCAN home if on another screen
     BackHandler(enabled = currentTab != NavTab.SCAN) {
         currentTab = NavTab.SCAN
     }
 
+    CompositionLocalProvider(LocalHapticsEnabled provides isHapticsEnabled) {
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -122,7 +128,7 @@ fun MainApp(
                             shape = RoundedCornerShape(26.dp),
                             cornerRadiusDp = 26.dp,
                             elevation = 8.dp,
-                            backgroundColor = NeuBackground
+                            backgroundColor = NeuSurface
                         )
                         .padding(horizontal = 6.dp, vertical = 6.dp),
                     contentAlignment = Alignment.Center
@@ -181,6 +187,7 @@ fun MainApp(
             }
         }
     }
+    }
 }
 
 @Composable
@@ -191,14 +198,23 @@ fun TactileNavItem(
     modifier: Modifier = Modifier
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+    val haptics = rememberTactileHaptics()
 
     Box(
         modifier = modifier
+            .height(58.dp)
             .clip(RoundedCornerShape(18.dp))
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
-                onClick = onClick
+                onClick = {
+                    if (!isSelected) {
+                        haptics.tapClick()
+                    } else {
+                        haptics.pressDown()
+                    }
+                    onClick()
+                }
             )
             .then(
                 if (isSelected) {
@@ -206,7 +222,8 @@ fun TactileNavItem(
                         .neuDebossed(
                             shape = RoundedCornerShape(18.dp),
                             cornerRadiusDp = 18.dp,
-                            depth = 3.dp
+                            depth = 4.dp,
+                            backgroundColor = NeuBackground
                         )
                         .padding(vertical = 4.dp)
                 } else {
@@ -223,11 +240,11 @@ fun TactileNavItem(
             // Icon with soft highlight
             Box(
                 modifier = Modifier
-                    .size(32.dp)
+                    .size(30.dp)
                     .then(
                         if (isSelected) {
                             Modifier
-                                .background(NeuAccentBlue.copy(alpha = 0.15f), CircleShape)
+                                .background(NeuAccentBlue.copy(alpha = 0.14f), CircleShape)
                         } else Modifier
                     ),
                 contentAlignment = Alignment.Center

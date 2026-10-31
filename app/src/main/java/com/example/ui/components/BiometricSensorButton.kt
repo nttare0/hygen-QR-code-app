@@ -32,8 +32,10 @@ import androidx.compose.ui.unit.sp
 import com.example.ui.neumorphic.NeuButton
 import com.example.ui.neumorphic.neuDebossed
 import com.example.ui.neumorphic.neuRaised
+import com.example.ui.neumorphic.rememberTactileHaptics
 import com.example.ui.theme.NeuAccentBlue
 import com.example.ui.theme.NeuAccentGreen
+import com.example.ui.theme.NeuBackground
 import com.example.ui.theme.NeuSurface
 import com.example.ui.theme.NeuTextPrimary
 import com.example.ui.theme.NeuTextSecondary
@@ -71,7 +73,8 @@ fun BiometricSensorButton(
                     .neuDebossed(
                         shape = CircleShape,
                         cornerRadiusDp = 50.dp,
-                        depth = 4.dp
+                        depth = 4.dp,
+                        backgroundColor = NeuBackground
                     )
             )
 
@@ -88,9 +91,15 @@ fun BiometricSensorButton(
                     )
             )
 
+            val haptics = rememberTactileHaptics()
+
             // Inner Raised tactile sensor button
             NeuButton(
-                onClick = onAuthenticateClick,
+                onClick = {
+                    haptics.biometricScanPulse()
+                    onAuthenticateClick()
+                },
+                enableHaptics = false,
                 shape = CircleShape,
                 cornerRadiusDp = 35.dp,
                 elevation = 5.dp,

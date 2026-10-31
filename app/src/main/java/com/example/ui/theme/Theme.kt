@@ -3,18 +3,20 @@ package com.example.ui.theme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 
-private val NeuColorScheme = lightColorScheme(
-    primary = NeuAccentBlue,
-    onPrimary = NeuTextWhite,
-    primaryContainer = NeuAccentBlueLight,
-    onPrimaryContainer = NeuTextWhite,
-    secondary = NeuAccentOrange,
-    onSecondary = NeuTextWhite,
-    background = NeuBackground,
-    onBackground = NeuTextPrimary,
-    surface = NeuSurface,
-    onSurface = NeuTextPrimary,
+private val QuickPayLightColorScheme = lightColorScheme(
+    primary = NeuAccent,                  // Indigo #5B5CE2 (actions)
+    onPrimary = Color.White,
+    primaryContainer = NeuSurfaceVariant, // Neutral soft blue-grey container
+    onPrimaryContainer = NeuTextPrimary,
+    secondary = NeuAccentSecondary,       // Teal #18A999 (success / verified)
+    onSecondary = Color.White,
+    tertiary = NeuNeutralSlate,           // Neutral slate
+    background = NeuBackground,           // Soft blue #F3F7FC
+    onBackground = NeuTextPrimary,        // Deep navy #17243B
+    surface = NeuSurface,                 // Pure white #FFFFFF cards
+    onSurface = NeuTextPrimary,           // Deep navy #17243B
     surfaceVariant = NeuSurfaceVariant,
     onSurfaceVariant = NeuTextSecondary
 )
@@ -24,7 +26,7 @@ fun MyApplicationTheme(
     content: @Composable () -> Unit
 ) {
     MaterialTheme(
-        colorScheme = NeuColorScheme,
+        colorScheme = QuickPayLightColorScheme,
         typography = AppTypography,
         content = content
     )

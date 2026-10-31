@@ -2,6 +2,7 @@ package com.example.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,11 +20,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Nfc
-import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.Vibration
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -34,6 +37,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -41,18 +45,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.R
+import com.example.ui.components.VaultExplainerCard
 import com.example.ui.neumorphic.NeuButton
+import com.example.ui.neumorphic.neuDebossed
 import com.example.ui.neumorphic.neuRaised
-import com.example.ui.theme.FiraCodeFontFamily
+import com.example.ui.neumorphic.rememberTactileHaptics
+import com.example.ui.theme.InterFontFamily
+import com.example.ui.theme.ManropeFontFamily
 import com.example.ui.theme.NeuAccentBlue
 import com.example.ui.theme.NeuAccentGreen
-import com.example.ui.theme.NeuAccentOrange
 import com.example.ui.theme.NeuBackground
 import com.example.ui.theme.NeuSurface
-import com.example.ui.theme.NeuTextMuted
 import com.example.ui.theme.NeuTextPrimary
 import com.example.ui.theme.NeuTextSecondary
-import com.example.ui.theme.PlayfairFontFamily
 import com.example.ui.viewmodel.PaymentViewModel
 
 @Composable
@@ -63,7 +68,10 @@ fun SecuritySettingsScreen(
 ) {
     val isNfcEnabled by viewModel.isNfcEnabled.collectAsState()
     val isBiometricsRequired by viewModel.isBiometricsRequired.collectAsState()
+    val isHapticsEnabled by viewModel.isHapticsEnabled.collectAsState()
     val spendingLimit by viewModel.childSpendingLimit.collectAsState()
+    val haptics = rememberTactileHaptics()
+    val vaultPresets = listOf(50.0, 100.0, 250.0, 500.0, 1000.0)
 
     Column(
         modifier = modifier
@@ -86,8 +94,9 @@ fun SecuritySettingsScreen(
                 shape = RoundedCornerShape(14.dp),
                 cornerRadiusDp = 14.dp,
                 elevation = 3.dp,
+                backgroundColor = NeuSurface,
                 modifier = Modifier
-                    .height(40.dp)
+                    .height(48.dp)
                     .testTag("security_back_button")
             ) {
                 Row(
@@ -103,6 +112,7 @@ fun SecuritySettingsScreen(
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = "Scanner",
+                        fontFamily = ManropeFontFamily,
                         fontWeight = FontWeight.Bold,
                         fontSize = 12.sp,
                         color = NeuAccentBlue
@@ -114,28 +124,30 @@ fun SecuritySettingsScreen(
         Spacer(modifier = Modifier.height(14.dp))
 
         Text(
-            text = "Security Configuration",
-            fontFamily = PlayfairFontFamily,
+            text = "Security Vault",
+            fontFamily = ManropeFontFamily,
             fontWeight = FontWeight.Bold,
-            fontSize = 24.sp,
+            fontSize = 26.sp,
             color = NeuTextPrimary
         )
         Text(
-            text = "Bank encryption and biometric authorization",
+            text = "Hardware card tokenization, transaction caps & biometric lock",
+            fontFamily = InterFontFamily,
             fontSize = 12.sp,
             color = NeuTextSecondary
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(18.dp))
 
         // 3D Vault Shield Asset Container
         Box(
             modifier = Modifier
-                .size(130.dp)
+                .size(124.dp)
                 .neuRaised(
                     shape = CircleShape,
-                    cornerRadiusDp = 65.dp,
-                    elevation = 6.dp
+                    cornerRadiusDp = 62.dp,
+                    elevation = 6.dp,
+                    backgroundColor = NeuSurface
                 )
                 .clip(CircleShape),
             contentAlignment = Alignment.Center
@@ -148,7 +160,147 @@ fun SecuritySettingsScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // Clear Explanation of What Vault Means & How It Works
+        VaultExplainerCard()
+
+        Spacer(modifier = Modifier.height(14.dp))
+
+        // Interactive Vault Global Transaction Limit Card
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .neuRaised(
+                    shape = RoundedCornerShape(18.dp),
+                    cornerRadiusDp = 18.dp,
+                    elevation = 4.dp,
+                    backgroundColor = NeuSurface
+                )
+                .padding(16.dp)
+        ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Lock,
+                            contentDescription = "Vault Spending Cap",
+                            tint = NeuTextSecondary,
+                            modifier = Modifier.size(22.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                text = "Vault Transaction Cap",
+                                fontFamily = ManropeFontFamily,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp,
+                                color = NeuTextPrimary
+                            )
+                            Text(
+                                text = "Global max allowed per QR scan across all cards",
+                                fontFamily = InterFontFamily,
+                                fontSize = 11.sp,
+                                color = NeuTextSecondary
+                            )
+                        }
+                    }
+
+                    Text(
+                        text = "SAR ${"%,.0f".format(spendingLimit)}",
+                        fontFamily = ManropeFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        color = NeuTextPrimary,
+                        modifier = Modifier.testTag("vault_spending_limit_text")
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    NeuButton(
+                        onClick = { viewModel.updateVaultSpendingLimit((spendingLimit - 50.0).coerceAtLeast(25.0)) },
+                        shape = CircleShape,
+                        cornerRadiusDp = 24.dp,
+                        elevation = 3.dp,
+                        backgroundColor = NeuBackground,
+                        modifier = Modifier
+                            .size(48.dp)
+                            .testTag("vault_limit_decrease_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Remove,
+                            contentDescription = "Decrease Vault cap",
+                            tint = NeuAccentBlue,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        vaultPresets.forEach { preset ->
+                            val selected = spendingLimit.toInt() == preset.toInt()
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(if (selected) NeuAccentBlue else NeuBackground)
+                                    .clickable {
+                                        haptics.tapClick()
+                                        viewModel.updateVaultSpendingLimit(preset)
+                                    }
+                                    .padding(vertical = 8.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "${preset.toInt()}",
+                                    fontFamily = InterFontFamily,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 11.sp,
+                                    color = if (selected) Color.White else NeuTextSecondary
+                                )
+                            }
+                        }
+                    }
+
+                    NeuButton(
+                        onClick = { viewModel.updateVaultSpendingLimit((spendingLimit + 50.0).coerceAtMost(10000.0)) },
+                        shape = CircleShape,
+                        cornerRadiusDp = 24.dp,
+                        elevation = 3.dp,
+                        backgroundColor = NeuBackground,
+                        modifier = Modifier
+                            .size(48.dp)
+                            .testTag("vault_limit_increase_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Increase Vault cap",
+                            tint = NeuAccentBlue,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(14.dp))
 
         // Biometric Security Toggle
         Box(
@@ -157,7 +309,8 @@ fun SecuritySettingsScreen(
                 .neuRaised(
                     shape = RoundedCornerShape(18.dp),
                     cornerRadiusDp = 18.dp,
-                    elevation = 4.dp
+                    elevation = 4.dp,
+                    backgroundColor = NeuSurface
                 )
                 .padding(16.dp)
         ) {
@@ -170,19 +323,21 @@ fun SecuritySettingsScreen(
                     Icon(
                         imageVector = Icons.Default.Fingerprint,
                         contentDescription = "Biometrics",
-                        tint = NeuAccentBlue,
+                        tint = NeuTextSecondary,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
                         Text(
                             text = "Biometric Lock",
+                            fontFamily = ManropeFontFamily,
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp,
                             color = NeuTextPrimary
                         )
                         Text(
                             text = "Require Touch ID for every payment",
+                            fontFamily = InterFontFamily,
                             fontSize = 11.sp,
                             color = NeuTextSecondary
                         )
@@ -191,7 +346,10 @@ fun SecuritySettingsScreen(
 
                 Switch(
                     checked = isBiometricsRequired,
-                    onCheckedChange = { viewModel.toggleBiometrics(it) },
+                    onCheckedChange = {
+                        haptics.toggleSwitch(it)
+                        viewModel.toggleBiometrics(it)
+                    },
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = NeuAccentBlue,
                         checkedTrackColor = NeuAccentBlue.copy(alpha = 0.3f)
@@ -210,7 +368,8 @@ fun SecuritySettingsScreen(
                 .neuRaised(
                     shape = RoundedCornerShape(18.dp),
                     cornerRadiusDp = 18.dp,
-                    elevation = 4.dp
+                    elevation = 4.dp,
+                    backgroundColor = NeuSurface
                 )
                 .padding(16.dp)
         ) {
@@ -223,19 +382,21 @@ fun SecuritySettingsScreen(
                     Icon(
                         imageVector = Icons.Default.Nfc,
                         contentDescription = "NFC Tools",
-                        tint = NeuAccentBlue,
+                        tint = NeuTextSecondary,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
                         Text(
                             text = "NFC Tools",
+                            fontFamily = ManropeFontFamily,
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp,
                             color = NeuTextPrimary
                         )
                         Text(
                             text = "Contactless reader support",
+                            fontFamily = InterFontFamily,
                             fontSize = 11.sp,
                             color = NeuTextSecondary
                         )
@@ -244,7 +405,10 @@ fun SecuritySettingsScreen(
 
                 Switch(
                     checked = isNfcEnabled,
-                    onCheckedChange = { viewModel.toggleNfc(it) },
+                    onCheckedChange = {
+                        haptics.toggleSwitch(it)
+                        viewModel.toggleNfc(it)
+                    },
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = NeuAccentBlue,
                         checkedTrackColor = NeuAccentBlue.copy(alpha = 0.3f)
@@ -256,14 +420,15 @@ fun SecuritySettingsScreen(
 
         Spacer(modifier = Modifier.height(14.dp))
 
-        // Child Spending Limit Protection
+        // Tactile Haptic Feedback Toggle
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .neuRaised(
                     shape = RoundedCornerShape(18.dp),
                     cornerRadiusDp = 18.dp,
-                    elevation = 4.dp
+                    elevation = 4.dp,
+                    backgroundColor = NeuSurface
                 )
                 .padding(16.dp)
         ) {
@@ -274,33 +439,42 @@ fun SecuritySettingsScreen(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = Icons.Default.Lock,
-                        contentDescription = "Spending Limit",
-                        tint = NeuAccentOrange,
+                        imageVector = Icons.Default.Vibration,
+                        contentDescription = "Tactile Haptics",
+                        tint = NeuTextSecondary,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
                         Text(
-                            text = "Child Spending Limit",
+                            text = "Tactile Haptics",
+                            fontFamily = ManropeFontFamily,
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp,
                             color = NeuTextPrimary
                         )
                         Text(
-                            text = "Max allowance per transaction",
+                            text = "Subtle vibration on buttons & payments",
+                            fontFamily = InterFontFamily,
                             fontSize = 11.sp,
                             color = NeuTextSecondary
                         )
                     }
                 }
 
-                Text(
-                    text = "SAR ${spendingLimit.toInt()}",
-                    fontFamily = FiraCodeFontFamily,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
-                    color = NeuAccentOrange
+                Switch(
+                    checked = isHapticsEnabled,
+                    onCheckedChange = { enabled ->
+                        viewModel.toggleHaptics(enabled)
+                        if (enabled) {
+                            haptics.toggleSwitch(true)
+                        }
+                    },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = NeuAccentBlue,
+                        checkedTrackColor = NeuAccentBlue.copy(alpha = 0.3f)
+                    ),
+                    modifier = Modifier.testTag("haptics_toggle_switch")
                 )
             }
         }
@@ -314,7 +488,8 @@ fun SecuritySettingsScreen(
                 .neuRaised(
                     shape = RoundedCornerShape(18.dp),
                     cornerRadiusDp = 18.dp,
-                    elevation = 4.dp
+                    elevation = 4.dp,
+                    backgroundColor = NeuSurface
                 )
                 .padding(16.dp)
         ) {
@@ -333,6 +508,7 @@ fun SecuritySettingsScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = "Gemini 3.1 Flash Lite",
+                            fontFamily = ManropeFontFamily,
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp,
                             color = NeuTextPrimary
@@ -345,6 +521,7 @@ fun SecuritySettingsScreen(
                         ) {
                             Text(
                                 text = "LOW LATENCY",
+                                fontFamily = ManropeFontFamily,
                                 fontSize = 9.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = NeuAccentGreen
@@ -354,6 +531,7 @@ fun SecuritySettingsScreen(
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = "Real-time merchant verification (<300ms)",
+                        fontFamily = InterFontFamily,
                         fontSize = 11.sp,
                         color = NeuTextSecondary
                     )

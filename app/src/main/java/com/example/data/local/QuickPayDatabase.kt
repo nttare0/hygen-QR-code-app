@@ -19,8 +19,10 @@ abstract class QuickPayDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     QuickPayDatabase::class.java,
-                    "quickpay_database"
-                ).fallbackToDestructiveMigration(true).build()
+                    "quickpay_qr_database"
+                )
+                    .fallbackToDestructiveMigration(true)
+                    .build()
                 INSTANCE = instance
                 instance
             }

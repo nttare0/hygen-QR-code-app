@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">QuickPay QR</string>
+    <string name="nav_scan">Scan</string>
+    <string name="nav_wallet">Wallet</string>
+    <string name="nav_history">History</string>
+    <string name="nav_security">Security</string>
+    <string name="balance_label">Total Available Balance</string>
+    <string name="scan_ready_title">Ready to Scan</string>
+    <string name="scan_ready_subtitle">Align QR code inside optical well</string>
+    <string name="scan_action_label">Scan Code</string>
+    <string name="wallet_title">Tactile Wallet</string>
+    <string name="history_title">Scanning History</string>
+    <string name="security_title">Security Configuration</string>
 </resources>

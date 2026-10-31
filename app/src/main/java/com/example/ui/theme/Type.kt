@@ -8,12 +8,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.R
 
-// Custom Font Families from bundled local resources
-val PlayfairFontFamily = FontFamily(
-    Font(R.font.playfair_display, FontWeight.Normal),
-    Font(R.font.playfair_display, FontWeight.Bold)
+// Primary Heading & Numeric Display Font: Manrope
+val ManropeFontFamily = FontFamily(
+    Font(R.font.manrope, FontWeight.Normal),
+    Font(R.font.manrope, FontWeight.Medium),
+    Font(R.font.manrope, FontWeight.SemiBold),
+    Font(R.font.manrope, FontWeight.Bold)
 )
 
+// Body & UI Font: Inter
 val InterFontFamily = FontFamily(
     Font(R.font.inter, FontWeight.Normal),
     Font(R.font.inter, FontWeight.Medium),
@@ -21,50 +24,56 @@ val InterFontFamily = FontFamily(
     Font(R.font.inter, FontWeight.Bold)
 )
 
-val FiraCodeFontFamily = FontFamily(
-    Font(R.font.fira_code, FontWeight.Normal),
-    Font(R.font.fira_code, FontWeight.Medium)
-)
+// Map existing typography references across screens cleanly to Manrope + Inter
+val PlayfairFontFamily = ManropeFontFamily
+val PlusJakartaFontFamily = ManropeFontFamily
+val DmSansFontFamily = InterFontFamily
+val FiraCodeFontFamily = InterFontFamily
 
-// Material 3 Typography system mapping to our design spec
+// Material 3 Typography pairing Manrope (Headings & Balances) + Inter (Body & UI)
 val AppTypography = Typography(
     displayLarge = TextStyle(
-        fontFamily = PlayfairFontFamily,
+        fontFamily = ManropeFontFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 38.sp,
         lineHeight = 44.sp,
+        letterSpacing = (-0.5).sp,
+        fontFeatureSettings = "tnum",
         color = NeuTextPrimary
     ),
     displayMedium = TextStyle(
-        fontFamily = PlayfairFontFamily,
+        fontFamily = ManropeFontFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 30.sp,
         lineHeight = 36.sp,
+        letterSpacing = (-0.3).sp,
+        fontFeatureSettings = "tnum",
         color = NeuTextPrimary
     ),
     displaySmall = TextStyle(
-        fontFamily = PlayfairFontFamily,
+        fontFamily = ManropeFontFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 24.sp,
         lineHeight = 30.sp,
+        letterSpacing = (-0.2).sp,
         color = NeuTextPrimary
     ),
     headlineMedium = TextStyle(
-        fontFamily = InterFontFamily,
+        fontFamily = ManropeFontFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 20.sp,
         lineHeight = 26.sp,
         color = NeuTextPrimary
     ),
     titleLarge = TextStyle(
-        fontFamily = InterFontFamily,
+        fontFamily = ManropeFontFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 18.sp,
         lineHeight = 24.sp,
         color = NeuTextPrimary
     ),
     titleMedium = TextStyle(
-        fontFamily = InterFontFamily,
+        fontFamily = ManropeFontFamily,
         fontWeight = FontWeight.SemiBold,
         fontSize = 16.sp,
         lineHeight = 22.sp,
@@ -92,22 +101,25 @@ val AppTypography = Typography(
         color = NeuTextMuted
     ),
     labelLarge = TextStyle(
-        fontFamily = InterFontFamily,
+        fontFamily = ManropeFontFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 14.sp,
-        lineHeight = 18.sp
+        lineHeight = 18.sp,
+        color = NeuTextPrimary
     ),
     labelMedium = TextStyle(
         fontFamily = InterFontFamily,
         fontWeight = FontWeight.Medium,
         fontSize = 12.sp,
-        lineHeight = 16.sp
+        lineHeight = 16.sp,
+        color = NeuTextSecondary
     ),
     labelSmall = TextStyle(
-        fontFamily = FiraCodeFontFamily,
-        fontWeight = FontWeight.Normal,
+        fontFamily = InterFontFamily,
+        fontWeight = FontWeight.Medium,
         fontSize = 11.sp,
         lineHeight = 14.sp,
+        fontFeatureSettings = "tnum",
         color = NeuTextSecondary
     )
 )

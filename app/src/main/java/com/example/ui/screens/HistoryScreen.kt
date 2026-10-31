@@ -2,6 +2,7 @@ package com.example.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,12 +48,14 @@ import com.example.data.model.TransactionRecord
 import com.example.ui.neumorphic.NeuButton
 import com.example.ui.neumorphic.neuDebossed
 import com.example.ui.neumorphic.neuRaised
+import com.example.ui.neumorphic.rememberTactileHaptics
 import com.example.ui.theme.FiraCodeFontFamily
 import com.example.ui.theme.NeuAccentBlue
 import com.example.ui.theme.NeuAccentGreen
 import com.example.ui.theme.NeuAccentOrange
 import com.example.ui.theme.NeuBackground
 import com.example.ui.theme.NeuSurface
+import com.example.ui.theme.NeuSurfaceVariant
 import com.example.ui.theme.NeuTextMuted
 import com.example.ui.theme.NeuTextPrimary
 import com.example.ui.theme.NeuTextSecondary
@@ -142,7 +145,7 @@ fun HistoryScreen(
                     Icon(
                         imageVector = Icons.Default.QrCodeScanner,
                         contentDescription = "Scan QR",
-                        tint = NeuAccentOrange,
+                        tint = NeuAccentBlue,
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
@@ -150,7 +153,7 @@ fun HistoryScreen(
                         text = "Pay QR",
                         fontWeight = FontWeight.Bold,
                         fontSize = 12.sp,
-                        color = NeuAccentOrange
+                        color = NeuAccentBlue
                     )
                 }
             }
@@ -181,13 +184,14 @@ fun HistoryScreen(
 
             Spacer(modifier = Modifier.height(18.dp))
 
-            // Segmented Tabs ("Today" and "All")
+            // Segmented Tabs ("Today" and "All") — Indigo #5B5CE2 for active selection
             Row(
                 modifier = Modifier
                     .neuDebossed(
                         shape = RoundedCornerShape(24.dp),
                         cornerRadiusDp = 24.dp,
-                        depth = 3.dp
+                        depth = 3.dp,
+                        backgroundColor = NeuSurfaceVariant
                     )
                     .padding(4.dp),
                 horizontalArrangement = Arrangement.Center
@@ -198,7 +202,7 @@ fun HistoryScreen(
                     shape = RoundedCornerShape(20.dp),
                     cornerRadiusDp = 20.dp,
                     elevation = if (isToday) 4.dp else 1.dp,
-                    backgroundColor = if (isToday) NeuAccentOrange else Color.Transparent,
+                    backgroundColor = if (isToday) NeuAccentBlue else Color.Transparent,
                     modifier = Modifier
                         .width(110.dp)
                         .height(38.dp)
@@ -220,7 +224,7 @@ fun HistoryScreen(
                     shape = RoundedCornerShape(20.dp),
                     cornerRadiusDp = 20.dp,
                     elevation = if (isAll) 4.dp else 1.dp,
-                    backgroundColor = if (isAll) NeuAccentOrange else Color.Transparent,
+                    backgroundColor = if (isAll) NeuAccentBlue else Color.Transparent,
                     modifier = Modifier
                         .width(110.dp)
                         .height(38.dp)
@@ -249,7 +253,7 @@ fun HistoryScreen(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ReceiptLong,
                         contentDescription = "Empty History",
-                        tint = NeuAccentBlue.copy(alpha = 0.5f),
+                        tint = NeuTextMuted,
                         modifier = Modifier.size(56.dp)
                     )
                     Spacer(modifier = Modifier.height(12.dp))
@@ -272,6 +276,7 @@ fun HistoryScreen(
                         shape = RoundedCornerShape(14.dp),
                         cornerRadiusDp = 14.dp,
                         elevation = 4.dp,
+                        backgroundColor = NeuSurface,
                         modifier = Modifier
                             .height(44.dp)
                             .padding(horizontal = 20.dp)
@@ -280,7 +285,7 @@ fun HistoryScreen(
                             text = "Scan Now",
                             fontWeight = FontWeight.Bold,
                             fontSize = 13.sp,
-                            color = NeuAccentOrange,
+                            color = NeuAccentBlue,
                             modifier = Modifier.padding(horizontal = 16.dp)
                         )
                     }
@@ -310,11 +315,13 @@ fun HistoryScreen(
         selectedTransactionForDetails?.let { tx ->
             AlertDialog(
                 onDismissRequest = { selectedTransactionForDetails = null },
+                containerColor = NeuSurface,
                 title = {
                     Text(
                         text = "Smart Receipt Details",
                         fontFamily = PlayfairFontFamily,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = NeuTextPrimary
                     )
                 },
                 text = {
@@ -378,6 +385,7 @@ fun TransactionItemCard(
 ) {
     val dateFormat = remember { SimpleDateFormat("h:mm a, MMM d", Locale.getDefault()) }
     val formattedDate = dateFormat.format(Date(transaction.timestamp))
+    val haptics = rememberTactileHaptics()
 
     Box(
         modifier = Modifier
@@ -387,6 +395,10 @@ fun TransactionItemCard(
                 cornerRadiusDp = 18.dp,
                 elevation = 4.dp
             )
+            .clickable {
+                haptics.tapClick()
+                onClick()
+            }
             .padding(14.dp)
             .testTag("tx_item_${transaction.id}")
     ) {
@@ -399,12 +411,12 @@ fun TransactionItemCard(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.weight(1f)
             ) {
-                // Icon badge
+                // Icon badge (Neutral slate for expenses, Teal #18A999 for money-in deposits)
                 Box(
                     modifier = Modifier
                         .size(42.dp)
                         .background(
-                            color = if (transaction.isExpense) NeuAccentOrange.copy(alpha = 0.15f) else NeuAccentGreen.copy(alpha = 0.15f),
+                            color = if (transaction.isExpense) NeuBackground else NeuAccentGreen.copy(alpha = 0.14f),
                             shape = CircleShape
                         ),
                     contentAlignment = Alignment.Center
@@ -412,7 +424,7 @@ fun TransactionItemCard(
                     Icon(
                         imageVector = if (transaction.isExpense) Icons.Default.ArrowUpward else Icons.Default.ArrowDownward,
                         contentDescription = "Transaction Type",
-                        tint = if (transaction.isExpense) NeuAccentOrange else NeuAccentGreen,
+                        tint = if (transaction.isExpense) NeuTextSecondary else NeuAccentGreen,
                         modifier = Modifier.size(20.dp)
                     )
                 }
